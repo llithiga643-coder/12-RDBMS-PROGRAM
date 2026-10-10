@@ -1,27 +1,57 @@
-# College Management System – ER Diagram
+CREATE TABLE IF NOT EXISTS Department (
+    DepartmentID INT PRIMARY KEY,
+    DepartmentName VARCHAR(50)
+);
 
-## Question
+CREATE TABLE IF NOT EXISTS Faculty (
+    FacultyID INT PRIMARY KEY,
+    FacultyName VARCHAR(50)
+);
 
-Draw an ER diagram for a College Management System including the following entities:
+CREATE TABLE IF NOT EXISTS Course (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(50),
+    FacultyID INT,
+    FOREIGN KEY (FacultyID)
+    REFERENCES Faculty(FacultyID)
+);
 
-- Student
-- Course
-- Faculty
-- Department
+CREATE TABLE IF NOT EXISTS Student (
+    StudentID INT PRIMARY KEY,
+    StudentName VARCHAR(50),
+    DepartmentID INT,
+    FOREIGN KEY (DepartmentID)
+    REFERENCES Department(DepartmentID)
+);
 
-Use the following relationships:
+CREATE TABLE IF NOT EXISTS Enrollment (
+    StudentID INT,
+    CourseID INT,
+    PRIMARY KEY (StudentID, CourseID),
+    FOREIGN KEY (StudentID)
+    REFERENCES Student(StudentID),
+    FOREIGN KEY (CourseID)
+    REFERENCES Course(CourseID)
+);
 
-1. One Department has many Students.
-2. One Faculty handles many Courses.
-3. Many Students can enroll in many Courses.
+INSERT IGNORE INTO Department (DepartmentID, DepartmentName)
+VALUES (1, 'Computer Science');
 
-## Relationships
+INSERT IGNORE INTO Faculty (FacultyID, FacultyName)
+VALUES (1, 'Divya');
 
-### 1. Department – Student
+INSERT IGNORE INTO Course (CourseID, CourseName, FacultyID)
+VALUES (1, 'Database Systems', 1);
 
-One Department has many Students.
+INSERT IGNORE INTO Student (StudentID, StudentName, DepartmentID)
+VALUES (1, 'Alex Smith', 1);
 
-**Cardinality:** 1 : N
+INSERT IGNORE INTO Enrollment (StudentID, CourseID)
+VALUES (1, 1);
 
-```text
-Department 1 ───────── N Student
+SELECT s.StudentName, d.DepartmentName, c.CourseName, f.FacultyName
+FROM Enrollment e
+JOIN Student s ON s.StudentID = e.StudentID
+JOIN Department d ON d.DepartmentID = s.DepartmentID
+JOIN Course c ON c.CourseID = e.CourseID
+JOIN Faculty f ON f.FacultyID = c.FacultyID;
